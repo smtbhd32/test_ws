@@ -27,7 +27,7 @@ jobs:
 
       - name: Setup ROS2 environment
         run: |
-          source /opt/ros/humble/setup.bash  # Source ROS2 setup
+          . /opt/ros/humble/setup.bash  # Use dot (.) to source ROS2 setup file
           rosdep update  # Update rosdep for package dependency management
 
       - name: Build ROS2 workspace
@@ -38,13 +38,13 @@ jobs:
           cd /workspace
 
           # Build the workspace using colcon
-          source /opt/ros/humble/setup.bash  # Source ROS2 environment
+          . /opt/ros/humble/setup.bash  # Use dot (.) to source ROS2 setup file
           colcon build --symlink-install  # Build ROS2 workspace
 
       - name: Test build
         run: |
           # Source the ROS2 setup and run a specific ROS2 node to test the build
-          source /workspace/install/setup.bash
+          . /workspace/install/setup.bash  # Use dot (.) to source ROS2 setup file
           ros2 run <your_package> <your_node>  # Replace with your package and node names
 
       - name: Upload build artifacts
