@@ -1,10 +1,8 @@
-name: Build and Run colcon in Docker
+# .github/workflows/main.yml
+name: Build ROS2 Workspace
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -13,42 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Set up Docker Buildx (optional for multi-platform builds)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      # Build Docker image if it doesn't already exist
-      - name: Build Docker image if it doesn't exist
-        run: |
-          if ! docker image inspect myimage:latest > /dev/null 2>&1; then
-            docker build -t myimage:latest -f ./Dockerfile .
-          fi
+      - name: Use custom colcon build action
+        uses: ./.github/actions/colcon-build-action  # Reference your custom action in the relative path
+        with:
+          command: 'colcon build'  # You can modify the command if needed
 
-      # Run Docker container in detached mode (background)
-      - name: Run Docker container in detached mode
+      - name: Check build status
         run: |
-          docker run -d --name test-container myimage:latest bash -c "while true; do sleep 1000; done"
-
-      # Attach to the container and run colcon build
-      - name: Attach to Docker container and run colcon build
-        run: |
-          docker attach test-container
-          # The following will be executed in the attached container
-          echo "Current directory before colcon build:"
-          ls -l
-          source /opt/ros/humble/setup.bash
-          source ~/ros_ws/install/setup.bash
-          colcon build
-          # Optional: Print out the build results
-          echo "Colcon build completed. Now checking the build output."
-          ls -l ~/ros_ws
-          
-      # Clean up Docker container after the build
-      - name: Clean up Docker container
-        run: |
-          docker stop test-container
-          docker rm test-container
+          echo "Build completed successfully!"
