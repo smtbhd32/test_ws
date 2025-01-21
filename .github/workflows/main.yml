@@ -48,7 +48,7 @@ jobs:
           ros2 run <your_package> <your_node>  # Replace with your package and node names
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v2  # Upload build artifacts to GitHub for later use
+        uses: actions/upload-artifact@v3  # Use v3 for the latest stable version
         with:
           name: ros2-build-artifacts
           path: /workspace/install
