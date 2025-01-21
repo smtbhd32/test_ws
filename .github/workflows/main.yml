@@ -34,14 +34,14 @@ jobs:
       # Set up ROS 2 environment in Docker container and run colcon build
       - name: Set up ROS 2 environment in Docker container and run colcon build
         run: |
-          docker exec mycontainer bash -c "source /opt/ros/foxy/setup.bash && \
+          docker exec mycontainer bash -c "source /opt/ros/humble/setup.bash && \
           source ~/ros_ws/install/setup.bash && \
           colcon build"
 
       # Check the result of colcon build and show output
       - name: Show colcon build result
         run: |
-          docker exec mycontainer bash -c "source /opt/ros/foxy/setup.bash && \
+          docker exec mycontainer bash -c "source /opt/ros/humble/setup.bash && \
           source ~/ros_ws/install/setup.bash && \
           colcon build && \
           tail -n 20 ~/ros_ws/log/latest_build/colcon_build_output.log"
