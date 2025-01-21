@@ -15,6 +15,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build ROS2 workspace using colcon inside Docker
-        uses: ./.github/actions/colcon-build-action
+        uses: ./.github/actions
         with:
           command: colcon build
