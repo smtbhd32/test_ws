@@ -1,20 +1,54 @@
-# .github/workflows/ci.yml
-name: Build ROS2 Packages
+name: ROS2 Build with Docker on Ubuntu 22.04
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - main  # Trigger the workflow on push to the main branch
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Runs the job on a Ubuntu 22.04 VM
+    container:
+      image: ros:humble-ros-base  # Docker container image for ROS2 Humble
+      options: --user=root  # Run as root user in the container
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # Checks out your repository to the workspace
 
-      - name: Build ROS2 workspace using colcon inside Docker
-        uses: ./.github/actions
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y \
+            python3-colcon-common-extensions \
+            python3-rosdep \
+            python3-vcstool \
+            git  # Added git for any repository dependencies
+
+      - name: Setup ROS2 environment
+        run: |
+          source /opt/ros/humble/setup.bash  # Source ROS2 setup
+          rosdep update  # Update rosdep for package dependency management
+
+      - name: Build ROS2 workspace
+        run: |
+          # Navigate to workspace directory
+          mkdir -p /workspace/src
+          cp -r /github/workspace/src/* /workspace/src/
+          cd /workspace
+
+          # Build the workspace using colcon
+          source /opt/ros/humble/setup.bash  # Source ROS2 environment
+          colcon build --symlink-install  # Build ROS2 workspace
+
+      - name: Test build
+        run: |
+          # Source the ROS2 setup and run a specific ROS2 node to test the build
+          source /workspace/install/setup.bash
+          ros2 run <your_package> <your_node>  # Replace with your package and node names
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2  # Upload build artifacts to GitHub for later use
         with:
-          command: colcon build
+          name: ros2-build-artifacts
+          path: /workspace/install
