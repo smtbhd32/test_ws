@@ -1,0 +1,17 @@
+# .github/actions/colcon-build-action/action.yml
+name: 'ROS2 Colcon Build Action'
+description: 'Build ROS2 workspace with colcon inside Docker container'
+inputs:
+  command:  # input parameter to pass a command
+    description: 'Command to run in the Docker container'
+    required: true
+    default: 'colcon build'  # default command
+outputs:
+  build-status:  # output to indicate success or failure
+    description: 'The status of the build'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'  # Path to your Dockerfile inside this folder
+  args:
+    - ${{ inputs.command }}  # Pass the command to the Docker container
