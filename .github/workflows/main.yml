@@ -18,7 +18,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Use custom colcon build action
-        uses: ./.github/actions/colcon-build-action  # Reference your custom action in the relative path
+        uses: ./.github/actions/  # Reference your custom action in the relative path
         with:
           command: 'colcon build'  # You can modify the command if needed
 
