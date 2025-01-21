@@ -14,8 +14,4 @@ runs:
   using: 'docker'
   image: 'Dockerfile'  # Path to your Dockerfile inside this folder
   args:
-    - bash -c "source /opt/ros/humble/setup.bash && \
-               mkdir -p /workspace/src && \
-               cp -r /github/workspace/src/* /workspace/src/ && \
-               source /workspace/install/setup.bash && \
-               colcon build"
+    - bash -c "source /opt/ros/humble/setup.bash && mkdir -p /workspace/src && cp -r /github/workspace/src/* /workspace/src/ && source /workspace/install/setup.bash && colcon build"
