@@ -1,8 +1,8 @@
-# .github/workflows/main.yml
-name: Build ROS2 Workspace
+# .github/workflows/ci.yml
+name: Build ROS2 Packages
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -11,17 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Use custom colcon build action
-        uses: ./.github/actions/  # Reference your custom action in the relative path
+      - name: Build ROS2 workspace using colcon inside Docker
+        uses: ./.github/actions/colcon-build-action
         with:
-          command: 'colcon build'  # You can modify the command if needed
-
-      - name: Check build status
-        run: |
-          echo "Build completed successfully!"
+          command: colcon build
