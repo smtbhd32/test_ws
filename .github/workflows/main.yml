@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2  # Checks out your repository to the workspace
+        uses: actions/checkout@v3  # Checks out your repository to the workspace
 
       - name: Install dependencies
         run: |
@@ -27,8 +27,8 @@ jobs:
 
       - name: Setup ROS2 environment
         run: |
-          . /opt/ros/humble/setup.bash  # Use dot (.) to source ROS2 setup file
-          rosdep update  # Update rosdep for package dependency management
+          # Use bash explicitly
+          bash -c "source /opt/ros/humble/setup.bash && rosdep update"
 
       - name: Build ROS2 workspace
         run: |
@@ -38,14 +38,12 @@ jobs:
           cd /workspace
 
           # Build the workspace using colcon
-          . /opt/ros/humble/setup.bash  # Use dot (.) to source ROS2 setup file
-          colcon build --symlink-install  # Build ROS2 workspace
+          bash -c "source /opt/ros/humble/setup.bash && colcon build --symlink-install"
 
       - name: Test build
         run: |
           # Source the ROS2 setup and run a specific ROS2 node to test the build
-          . /workspace/install/setup.bash  # Use dot (.) to source ROS2 setup file
-          ros2 run <your_package> <your_node>  # Replace with your package and node names
+          bash -c "source /workspace/install/setup.bash && ros2 run <your_package> <your_node>"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3  # Use v3 for the latest stable version
