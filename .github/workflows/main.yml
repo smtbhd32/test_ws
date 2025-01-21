@@ -1,4 +1,4 @@
-name: Build and Check colcon on Commit to Main
+name: Build and Run colcon in Docker
 
 on:
   push:
@@ -21,31 +21,35 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      # Build Docker image from the custom Dockerfile in the repository
-      - name: Build Docker image from custom Dockerfile
+      # Build Docker image if it doesn't already exist
+      - name: Build Docker image if it doesn't exist
         run: |
-          docker build -t myimage:latest -f ./Dockerfile .
+          if ! docker image inspect myimage:latest > /dev/null 2>&1; then
+            docker build -t myimage:latest -f ./Dockerfile .
+          fi
 
-      # Run Docker container
-      - name: Run Docker container
+      # Run Docker container from the pre-built image
+      - name: Run Docker container from the image
         run: |
-          docker run -d --name mycontainer myimage:latest
+          docker run -d --name test-container --memory="4g" --cpus="2" myimage:latest
 
       # Set up ROS 2 environment in Docker container and run colcon build
       - name: Set up ROS 2 environment in Docker container and run colcon build
         run: |
-          docker exec mycontainer bash -c "source /opt/ros/humble/setup.bash && \
+          docker exec test-container bash -c "source /opt/ros/humble/setup.bash && \
+          source ~/ros_ws/install/setup.bash && \
           colcon build"
 
-      # Check the result of colcon build and show output
+      # Show colcon build result
       - name: Show colcon build result
         run: |
-          docker exec mycontainer bash -c "source /opt/ros/humble/setup.bash && \
+          docker exec test-container bash -c "source /opt/ros/humble/setup.bash && \
+          source ~/ros_ws/install/setup.bash && \
           colcon build && \
           tail -n 20 ~/ros_ws/log/latest_build/colcon_build_output.log"
 
-      # Clean up Docker container after the build
+      # Stop and remove Docker container after the build
       - name: Clean up Docker container
         run: |
-          docker stop mycontainer
-          docker rm mycontainer
+          docker stop test-container
+          docker rm test-container
