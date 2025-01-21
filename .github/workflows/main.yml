@@ -28,17 +28,30 @@ jobs:
             docker build -t myimage:latest -f ./Dockerfile .
           fi
 
-      # Run Docker container from the image and execute colcon build
-      - name: Run Docker container and execute colcon build
+      # Run Docker container in detached mode (background)
+      - name: Run Docker container in detached mode
         run: |
-          # Run container with a command to build the ROS workspace
-          docker run --name test-container -d myimage:latest bash -c "source /opt/ros/humble/setup.bash && colcon build"
+          docker run -d --name test-container myimage:latest bash
+
+      # Attach to the running container and run commands interactively (you'll see this in the logs)
+      - name: Attach to container and run colcon build interactively
+        run: |
+          docker attach test-container
+          # Once attached, you will be able to run commands interactively in the terminal
+          echo "Current directory before colcon build:"
+          docker exec test-container pwd
+          echo "Listing directory contents:"
+          docker exec test-container ls -al
+          echo "Sourcing ROS setup files:"
+          docker exec test-container bash -c "source /opt/ros/humble/setup.bash && source ~/ros_ws/install/setup.bash"
+          echo "Running colcon build:"
+          docker exec test-container colcon build
 
       # Print colcon build result (logs)
       - name: Show colcon build result
         run: |
           docker logs test-container
-          
+
       # Stop and remove Docker container after the build
       - name: Clean up Docker container
         run: |
