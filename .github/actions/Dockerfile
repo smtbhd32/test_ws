@@ -1,28 +1,16 @@
-FROM ros:humble-ros-core-jammy
+# .github/actions/colcon-build-action/Dockerfile
+FROM ros:humble
 
-# Install bootstrap tools
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    build-essential \
-    git \
+# Install dependencies and colcon
+RUN apt-get update && apt-get install -y \
     python3-colcon-common-extensions \
-    python3-colcon-mixin \
-    python3-rosdep \
-    python3-vcstool \
     && rm -rf /var/lib/apt/lists/*
 
-# bootstrap rosdep
-RUN rosdep init && \
-  rosdep update --rosdistro $ROS_DISTRO
+# Set up workspace environment
+WORKDIR /workspace
 
-# setup colcon mixin and metadata
-RUN colcon mixin add default \
-      https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml && \
-    colcon mixin update && \
-    colcon metadata add default \
-      https://raw.githubusercontent.com/colcon/colcon-metadata-repository/master/index.yaml && \
-    colcon metadata update
+# Install ROS setup script for ROS2
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
-# install ros2 packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-humble-ros-base=0.10.0-1* \
-    && rm -rf /var/lib/apt/lists/*
+# Default command (could be overridden)
+CMD ["bash"]
