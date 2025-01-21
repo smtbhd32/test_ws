@@ -34,7 +34,11 @@ jobs:
         run: |
           # Navigate to workspace directory
           mkdir -p /workspace/src
-          cp -r /github/workspace/src/* /workspace/src/
+          
+          # Ensure that your repository's `src` folder exists at the right path
+          cp -r /github/workspace/test_ws/src/* /workspace/src/
+          
+          # Navigate to workspace for build
           cd /workspace
 
           # Build the workspace using colcon
@@ -43,7 +47,7 @@ jobs:
       - name: Test build
         run: |
           # Source the ROS2 setup and run a specific ROS2 node to test the build
-          bash -c "source /workspace/install/setup.bash && ros2 run <your_package> <your_node>"
+          bash -c "source /workspace/install/setup.bash && ros2 run ps3 <your_node>"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3  # Use v3 for the latest stable version
