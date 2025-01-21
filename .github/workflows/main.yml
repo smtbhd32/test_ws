@@ -28,26 +28,17 @@ jobs:
             docker build -t myimage:latest -f ./Dockerfile .
           fi
 
-      # Run Docker container from the pre-built image
-      - name: Run Docker container from the image
+      # Run Docker container from the image and execute colcon build
+      - name: Run Docker container and execute colcon build
         run: |
-          docker run -d --name test-container --memory="4g" --cpus="2" myimage:latest
+          # Run container with a command to build the ROS workspace
+          docker run --name test-container -d myimage:latest bash -c "source /opt/ros/humble/setup.bash && colcon build"
 
-      # Set up ROS 2 environment in Docker container and run colcon build
-      - name: Set up ROS 2 environment in Docker container and run colcon build
-        run: |
-          docker exec test-container bash -c "source /opt/ros/humble/setup.bash && \
-          source ~/ros_ws/install/setup.bash && \
-          colcon build"
-
-      # Show colcon build result
+      # Print colcon build result (logs)
       - name: Show colcon build result
         run: |
-          docker exec test-container bash -c "source /opt/ros/humble/setup.bash && \
-          source ~/ros_ws/install/setup.bash && \
-          colcon build && \
-          tail -n 20 ~/ros_ws/log/latest_build/colcon_build_output.log"
-
+          docker logs test-container
+          
       # Stop and remove Docker container after the build
       - name: Clean up Docker container
         run: |
