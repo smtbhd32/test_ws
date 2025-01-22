@@ -1,4 +1,4 @@
-name: project_legion_build
+name: colcon_build_test
 
 on:
   # Triggered whenever push to the master branch
