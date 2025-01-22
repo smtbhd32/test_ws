@@ -21,7 +21,7 @@ jobs:
     steps:
       
       # Install some system pacakges
-      - name: Install ROS 2 Galactic packages
+      - name: Install ROS 2 Humble packages
         run: |
           sudo apt update
           sudo apt install -y software-properties-common
@@ -36,7 +36,7 @@ jobs:
       - name: Setup Workspace
         run: |
           source /opt/ros/humble/setup.bash
-          mkdir -p project/test_ws/
+          mkdir -p project/test_ws
           cd test_ws
           colcon build
           source install/setup.bash
