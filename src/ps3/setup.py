@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'ps3dd'
+package_name = 'ps3'
 
 setup(
     name=package_name,
